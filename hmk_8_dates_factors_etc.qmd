@@ -36,6 +36,13 @@ blue_eyes
 red_eyes <- starwars |>
   filter(str_detect(eye_color, "red"))
 red_eyes
+
+both_eyes <- starwars %>%
+  filter(
+    str_detect(eye_color, "blue") &
+    str_detect(eye_color, "red")
+  )
+both_eyes
 ```
 
 ## Question 2 — American Unemployment Over Time
@@ -52,22 +59,42 @@ The `ggplot2::economics` dataset contains monthly U.S. macroeconomic indicators 
 Now use lubridate to plot only the unemployment data from Jan 1st 2008 to Jan 1st 2009. Hint: use the lubridate function ymd to specify date windows, and use a similar logical criteria to in Q1, above
 
 ```{r}
-# your code here
+  economics %>%
+  filter(
+    date >= ymd("2008-01-01") &
+    date <= ymd("2009-01-01")
+  ) %>%
+  ggplot(aes(x = date, y = unemploy)) +
+  geom_line() +
+  labs(
+    title = "Unemployment (2008–2009)",
+    x = "Date",
+    y = "Unemployed"
+  )
 ```
 
 What do you notice about the format of the date variable on the x axis of this plot vs the plot over the entire time window. What do you think is happening here?
 
-**Your answer:**
+**Your answer: the x axis of this includes months and year which is more detailed than the plot over the entire time window**
 
 Now use mutate to calculate a new variable - the monthly unemployment rate as `unemploy / pop * 100`. Make a plot over the whole time period as in part 1 of this question.
 
 ```{r}
-# your code here
+economics %>%
+  mutate(unemp_rate = unemploy / pop * 100) %>%
+  ggplot(aes(x = date, y = unemp_rate)) +
+  geom_line() +
+  labs(
+    title = "Unemployment Rate Over Time",
+    x = "Date",
+    y = "Unemployment Rate (%)"
+  )
+
 ```
 
 Do you draw different conclusions now about how unemployment has changed over these 40 years? what explains the difference?
 
-**your answer:**
+**your answer: yes the conclusion differs a little bit because when the unemployed plot looks like it's increasing over time while the unemployment plot is increasing and decreasing as year goes by. I think this difference is due to because the rate is more focus on the population size.**
 
 ## Question 3 — Flight Status and the Value of Factors
 
@@ -95,12 +122,21 @@ ggplot(flight_status, aes(x = status)) +
   geom_bar()
 ```
 
-**your answer:**
+**your answer: the ordering of the bar is alphabetized and i don't think it is meaningful because it is a little bit confusing since the pathway is not according to time if that makes sense**
 
 **(b)** Convert `status` to a factor with levels in a natural severity order: `"very early"`, `"early"`, `"on time"`, `"late"`, `"very late"`, `"cancelled"`. Save it back into `flight_status` and recreate the bar chart. How does the chart change?
 
 ```{r}
-# your code here
+flight_status <- flight_status %>%
+  mutate(
+    status = factor(
+      status,
+      levels = c("very early", "early", "on time", "late", "very late", "cancelled")
+    )
+  )
+
+ggplot(flight_status, aes(x = status)) +
+  geom_bar()
 ```
 
-**your answer:**
+**your answer: the chart is more meaningful in more easy to read since it is now in a normal order**
